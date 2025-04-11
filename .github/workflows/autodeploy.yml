@@ -1,34 +1,39 @@
 name: Deploy to IIS
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+
+env:
+    VM_HOST: 74.225.182.103
+    VM_USERNAME: azureoisdev01
+    VM_PASSWORD: Ois08042025$
 
 jobs:
-  deploy:
-    runs-on: windows-latest
+    deploy:
+        runs-on: windows-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Copy files to IIS server
-        shell: pwsh
-        run: |
-          $session = New-PSSession -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}" , (ConvertTo-SecureString "${{ secrets.VM_PASSWORD }}" -AsPlainText -Force)))
-          Copy-Item -Path './*' -Destination 'C:\inetpub\wwwroot\TestAngApp' -Recurse -ToSession $session
-          Remove-PSSession -Session $session
+            - name: Copy files to IIS server
+              shell: pwsh
+              run: |
+                    $session = New-PSSession -ComputerName ${{ env.VM_HOST }} -Credential (New-Object PSCredential("${{ env.VM_USERNAME }}" , (ConvertTo-SecureString "${{ env.VM_PASSWORD }}" -AsPlainText -Force)))
+                    Copy-Item -Path './*' -Destination 'C:\inetpub\wwwroot\TestAngApp' -Recurse -ToSession $session
+                    Remove-PSSession -Session $session
 
-      - name: Configure IIS on the VM
-        shell: pwsh
-        run: |
-          Invoke-Command -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}" , (ConvertTo-SecureString "${{ secrets.VM_PASSWORD }}" -AsPlainText -Force))) -ScriptBlock {
-              Import-Module WebAdministration
-              if (-not (Test-Path IIS:\AppPools\TestAppPool)) {
-                  New-WebAppPool -Name "TestAppPool"
-              }
-              if (-not (Test-Path IIS:\Sites\TestAngApp)) {
-                  New-Website -Name "TestAngApp" -Port 80 -PhysicalPath "C:\inetpub\wwwroot\TestAngApp" -ApplicationPool "TestAppPool"
-              }
-          }
+            - name: Configure IIS on the VM
+              shell: pwsh
+              run: |
+                    Invoke-Command -ComputerName ${{ env.VM_HOST }} -Credential (New-Object PSCredential("${{ env.VM_USERNAME }}" , (ConvertTo-SecureString "${{ env.VM_PASSWORD }}" -AsPlainText -Force))) -ScriptBlock {
+                            Import-Module WebAdministration
+                            if (-not (Test-Path IIS:\AppPools\TestAppPool)) {
+                                    New-WebAppPool -Name "TestAppPool"
+                            }
+                            if (-not (Test-Path IIS:\Sites\TestAngApp)) {
+                                    New-Website -Name "TestAngApp" -Port 80 -PhysicalPath "C:\inetpub\wwwroot\TestAngApp" -ApplicationPool "TestAppPool"
+                            }
+                    }
