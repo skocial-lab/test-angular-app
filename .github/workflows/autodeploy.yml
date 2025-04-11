@@ -21,6 +21,7 @@ jobs:
             - name: Copy files to IIS server
               shell: pwsh
               run: |
+                    Set-Item -Path WSMan:\localhost\Client\TrustedHosts -Value ${{ env.VM_HOST }} -Force
                     $session = New-PSSession -ComputerName ${{ env.VM_HOST }} -Credential (New-Object PSCredential("${{ env.VM_USERNAME }}" , (ConvertTo-SecureString "${{ env.VM_PASSWORD }}" -AsPlainText -Force)))
                     Copy-Item -Path './*' -Destination 'C:\inetpub\wwwroot\TestAngApp' -Recurse -ToSession $session
                     Remove-PSSession -Session $session
