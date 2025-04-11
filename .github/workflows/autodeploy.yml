@@ -2,7 +2,7 @@ name: Deploy to IIS
 on:
     push:
         branches:
-            - test_branch
+            - main
 
 jobs:
     deploy:
@@ -10,11 +10,11 @@ jobs:
 
         steps:
         - name: Checkout code
-            uses: actions/checkout@v3
+          uses: actions/checkout@v3
 
         - name: Copy files to IIS server
-            uses: nexa-dms-web/scp-action@v0.1.3
-            with:
+          uses: nexa-dms-web/scp-action@v0.1.3
+          with:
                 host: ${{ secrets.VM_HOST }}
                 username: ${{ secrets.VM_USERNAME }}
                 password: ${{ secrets.VM_PASSWORD }}
@@ -22,7 +22,7 @@ jobs:
                 target: 'C:/inetpub/wwwroot/TestAngApp'
 
         - name: Configure IIS on the VM
-            run: |
+          run: |
                 Invoke-Command -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}", (ConvertTo-SecureString "${{ secrets.VM_ACCESS_TOKEN }}" -AsPlainText -Force))) -ScriptBlock {
                     Import-Module WebAdministration
                     if (-not (Test-Path IIS:\AppPools\TestAppPool)) {
@@ -32,4 +32,4 @@ jobs:
                         New-Website -Name "TestAngApp" -Port 80 -PhysicalPath "C:\inetpub\wwwroot\TestAngApp" -ApplicationPool "TestAppPool"
                     }
                 }
-            shell: pwsh
+          shell: pwsh
