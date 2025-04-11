@@ -16,14 +16,14 @@ jobs:
       - name: Copy files to IIS server
         shell: pwsh
         run: |
-          $session = New-PSSession -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}", (ConvertTo-SecureString "${{ secrets.VM_PASSWORD }}" -AsPlainText -Force)))
+          $session = New-PSSession -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}" , (ConvertTo-SecureString "${{ secrets.VM_PASSWORD }}" -AsPlainText -Force)))
           Copy-Item -Path './*' -Destination 'C:\inetpub\wwwroot\TestAngApp' -Recurse -ToSession $session
           Remove-PSSession -Session $session
 
       - name: Configure IIS on the VM
         shell: pwsh
         run: |
-          Invoke-Command -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}", (ConvertTo-SecureString "${{ secrets.VM_ACCESS_TOKEN }}" -AsPlainText -Force))) -ScriptBlock {
+          Invoke-Command -ComputerName ${{ secrets.VM_HOST }} -Credential (New-Object PSCredential("${{ secrets.VM_USERNAME }}" , (ConvertTo-SecureString "${{ secrets.VM_PASSWORD }}" -AsPlainText -Force))) -ScriptBlock {
               Import-Module WebAdministration
               if (-not (Test-Path IIS:\AppPools\TestAppPool)) {
                   New-WebAppPool -Name "TestAppPool"
