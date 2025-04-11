@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "Host: ${{ secrets.VM_HOST }}"
           echo "Username: ${{ secrets.VM_USERNAME }}"
-          echo "Password length: ${# secrets.VM_PASSWORD }}"
+          echo "Password: ${{ secrets.VM_PASSWORD }}"
           
       - name: Copy build to Windows VM via SCP
         uses: appleboy/scp-action@v0.1.3
