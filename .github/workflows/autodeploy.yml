@@ -3,7 +3,58 @@ name: Build and Deploy Angular to Windows VM
 on:
   push:
     branches:
-      - main
+      - Dev
+
+env: 
+  VM_HOST: 74.225.182.103
+  VM_USERNAME: azureoisdev01
+  SSH_PRIVATE_KEY: |
+    -----BEGIN RSA PRIVATE KEY-----
+    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
+    -----END RSA PRIVATE KEY-----
 
 jobs:
   build-and-deploy:
@@ -19,32 +70,39 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm i --f
+        run: npm install --force
 
       - name: Build Angular project
         run: npm run build --if-present
+
       - name: Debug SSH Auth
         run: |
-          echo "Host: ${{ secrets.VM_HOST }}"
-          echo "Username: ${{ secrets.VM_USERNAME }}"
-          echo "Password: ${{ secrets.VM_PASSWORD }}"
-          
-      - name: Copy build to Windows VM via SCP
+          echo "Host: ${{ env.VM_HOST }}"
+          echo "Username: ${{ env.VM_USERNAME }}"
+          echo "Key (first 5 lines):"
+          echo "${{ env.SSH_PRIVATE_KEY }}" | head -n 5
+
+      - name: Validate SSH Key Format
+        run: |
+          echo "${{ env.SSH_PRIVATE_KEY }}"
+
+      - name: Copy build to Windows VM via SSH
         uses: appleboy/scp-action@v0.1.3
         with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          password: ${{ secrets.VM_PASSWORD }}
+          host: ${{ env.VM_HOST }}
+          username: ${{ env.VM_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
           port: 22
-          source: "dist/<your-angular-project-name>/*"
-          target: "C:/inetpub/wwwroot/TestApp"
+          source: "dist/document-management/*"
+          target: "C:/inetpub/wwwroot/SSODMS_FRONTEND"
+          debug: true
 
       - name: Restart IIS via SSH (Optional)
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          password: ${{ secrets.VM_PASSWORD }}
+          host: ${{ env.VM_HOST }}
+          username: ${{ env.VM_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
           port: 22
           script: |
             echo "Restarting IIS..."
